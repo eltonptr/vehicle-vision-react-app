@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/vehicle-vision-react-app/static/css/main.ea1455b2.chunk.css",
+    "main.js": "/vehicle-vision-react-app/static/js/main.f058da4f.chunk.js",
+    "main.js.map": "/vehicle-vision-react-app/static/js/main.f058da4f.chunk.js.map",
+    "runtime-main.js": "/vehicle-vision-react-app/static/js/runtime-main.7e9c5c81.js",
+    "runtime-main.js.map": "/vehicle-vision-react-app/static/js/runtime-main.7e9c5c81.js.map",
+    "static/js/2.5d8146a3.chunk.js": "/vehicle-vision-react-app/static/js/2.5d8146a3.chunk.js",
+    "static/js/2.5d8146a3.chunk.js.map": "/vehicle-vision-react-app/static/js/2.5d8146a3.chunk.js.map",
+    "static/js/3.61c44677.chunk.js": "/vehicle-vision-react-app/static/js/3.61c44677.chunk.js",
+    "static/js/3.61c44677.chunk.js.map": "/vehicle-vision-react-app/static/js/3.61c44677.chunk.js.map",
+    "index.html": "/vehicle-vision-react-app/index.html",
+    "static/css/main.ea1455b2.chunk.css.map": "/vehicle-vision-react-app/static/css/main.ea1455b2.chunk.css.map",
+    "static/js/2.5d8146a3.chunk.js.LICENSE.txt": "/vehicle-vision-react-app/static/js/2.5d8146a3.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.7e9c5c81.js",
+    "static/js/2.5d8146a3.chunk.js",
+    "static/css/main.ea1455b2.chunk.css",
+    "static/js/main.f058da4f.chunk.js"
+  ]
+}

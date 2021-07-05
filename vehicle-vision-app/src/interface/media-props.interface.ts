@@ -5,3 +5,9 @@ export interface screenshot {
 export interface MediaProps {
   latestImage: any;
 }
+
+export interface AzureResponse {
+  probability: number;
+  tagId: string;
+  tagName: string;
+}

@@ -1,86 +1,161 @@
+import React, { useState } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import Paper from "@material-ui/core/Paper";
+import axios from "axios";
 import {
-  Theme,
-  createStyles,
-  makeStyles,
-  useTheme,
-} from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
-import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
-import SkipPreviousIcon from "@material-ui/icons/SkipPrevious";
-import PlayArrowIcon from "@material-ui/icons/PlayArrow";
-import SkipNextIcon from "@material-ui/icons/SkipNext";
-import { MediaProps } from "../../interface/media-props.interface";
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      display: "flex",
+  AzureResponse,
+  MediaProps,
+} from "../../interface/media-props.interface";
+const useStyles = makeStyles({
+  table: {
+    minWidth: 600,
+  },
+});
+
+const response = {
+  id: "8e7fef48-dbfe-4abd-ab3f-cfb8148f41bc",
+  project: "05f6b2e5-dd5d-4703-a50a-1044b3d7f47a",
+  iteration: "74f1ef42-5f0e-4e4d-8af3-873d3abf4f34",
+  created: "2021-07-02T12:57:24.509Z",
+  predictions: [
+    {
+      probability: 0.35627556,
+      tagId: "c62ceb05-03b6-44e0-b9fd-1670613b8044",
+      tagName: "Aston Martin Virage Convertible 2012",
     },
-    details: {
-      display: "flex",
-      flexDirection: "column",
+    {
+      probability: 0.23506866,
+      tagId: "d2aeb568-ee28-47f8-b0d7-824c4e69641e",
+      tagName: "Audi R8 Coupe 2012",
     },
-    content: {
-      flex: "1 0 auto",
+    {
+      probability: 0.1911441,
+      tagId: "f8ff2dc8-fcf4-4144-86db-4823f3bbfbc6",
+      tagName: "AM General Hummer SUV 2000",
     },
-    cover: {
-      width: 151,
+    {
+      probability: 0.07213361,
+      tagId: "925ad202-2655-4837-bfd9-3c45ff7c72c8",
+      tagName: "Acura TL Type-S 2008",
     },
-    controls: {
-      display: "flex",
-      alignItems: "center",
-      paddingLeft: theme.spacing(1),
-      paddingBottom: theme.spacing(1),
+    {
+      probability: 0.03452298,
+      tagId: "57c2b13b-d1b6-4b4a-8a7a-0f36ddf78613",
+      tagName: "Aston Martin V8 Vantage Coupe 2012",
     },
-    playIcon: {
-      height: 38,
-      width: 38,
+    {
+      probability: 0.028097242,
+      tagId: "8d9808c8-4d62-4811-bbb5-f3401839e8af",
+      tagName: "Audi RS 4 Convertible 2008",
     },
-  })
-);
+    {
+      probability: 0.018102951,
+      tagId: "0bb730d8-0caa-4ab4-918f-d53306a1c52e",
+      tagName: "Acura ZDX Hatchback 2012",
+    },
+    {
+      probability: 0.01735906,
+      tagId: "7f525387-f78a-459e-b336-2a26bde97011",
+      tagName: "Aston Martin V8 Vantage Convertible 2012",
+    },
+    {
+      probability: 0.014167885,
+      tagId: "ea2301af-757b-4507-be3d-0f25ad7c7306",
+      tagName: "Aston Martin Virage Coupe 2012",
+    },
+    {
+      probability: 0.0094606355,
+      tagId: "747e3768-26ee-4e3b-a4fa-ff00ced44139",
+      tagName: "Acura TSX Sedan 2012",
+    },
+    {
+      probability: 0.008426548,
+      tagId: "5103f975-8b52-4d4e-a5f8-a0a50e4b4226",
+      tagName: "Acura Integra Type R 2001",
+    },
+    {
+      probability: 0.0050876476,
+      tagId: "a1679c36-f17c-4fa7-98f0-00d0fe0d7cb5",
+      tagName: "Audi A5 Coupe 2012",
+    },
+    {
+      probability: 0.0038383366,
+      tagId: "92bbb443-127b-4fa4-8935-3ac9f40a3868",
+      tagName: "Audi TTS Coupe 2012",
+    },
+    {
+      probability: 0.003788801,
+      tagId: "1d8dfcef-9171-49d7-96cb-25821ab317a7",
+      tagName: "Acura RL Sedan 2012",
+    },
+    {
+      probability: 0.0025259769,
+      tagId: "971690ac-6a7b-416e-af0a-25c5265c8936",
+      tagName: "Acura TL Sedan 2012",
+    },
+  ],
+};
 
 export const MediaControlCard: React.FC<MediaProps> = ({ latestImage }) => {
   const classes = useStyles();
-  const theme = useTheme();
+  const [predictedData, setPredictedData] = useState<AzureResponse[]>(
+    response.predictions
+  );
+
+  const fd = new FormData();
+  if (latestImage !== null) {
+    fd.append("image", latestImage);
+    axios({
+      method: "post",
+      url: "https://car-custom-vision-poc.cognitiveservices.azure.com/customvision/v3.0/Prediction/05f6b2e5-dd5d-4703-a50a-1044b3d7f47a/classify/iterations/Iteration1/image",
+      data: fd,
+      headers: {
+        "Content-Type": "multipart/form-data", // The essential
+        "Prediction-Key": "3325e104a82d4f23a8d091bada98552e",
+      },
+    })
+      .then((res: any) => {
+        console.log(res);
+        if (res.statusCode === "200") {
+          console.log(res);
+          setPredictedData(res.predictedData);
+        } else {
+          console.log(res);
+        }
+      })
+      .catch((res: any) => {
+        console.log(res);
+      });
+  }
 
   return (
-    <Card className={classes.root}>
-      <div className={classes.details}>
-        <CardContent className={classes.content}>
-          <Typography component="h5" variant="h5">
-            Live Feed From Camera
-          </Typography>
-          <Typography variant="subtitle1" color="textSecondary">
-            Mac Miller
-          </Typography>
-        </CardContent>
-        <div className={classes.controls}>
-          <IconButton aria-label="previous">
-            {theme.direction === "rtl" ? (
-              <SkipNextIcon />
-            ) : (
-              <SkipPreviousIcon />
-            )}
-          </IconButton>
-          <IconButton aria-label="play/pause">
-            <PlayArrowIcon className={classes.playIcon} />
-          </IconButton>
-          <IconButton aria-label="next">
-            {theme.direction === "rtl" ? (
-              <SkipPreviousIcon />
-            ) : (
-              <SkipNextIcon />
-            )}
-          </IconButton>
-        </div>
-      </div>
-      <CardMedia
-        className={classes.cover}
-        image={latestImage}
-        title="Live from space album cover"
-      />
-    </Card>
+    <TableContainer component={Paper}>
+      <Table className={classes.table} aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            <TableCell>probability</TableCell>
+            <TableCell align="right">tagId</TableCell>
+            <TableCell align="right">tagName</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {predictedData.map((row) => (
+            <TableRow key={row.tagId}>
+              <TableCell component="th" scope="row">
+                {row.tagId}
+              </TableCell>
+              <TableCell align="right">{row.tagName}</TableCell>
+              <TableCell align="right">{row.probability}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };

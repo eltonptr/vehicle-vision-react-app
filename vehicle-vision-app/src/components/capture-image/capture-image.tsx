@@ -13,7 +13,7 @@ import {
   useTheme,
 } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
-import { EventRounded } from "@material-ui/icons";
+import Resizer from "react-image-file-resizer";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -46,6 +46,8 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export const CaptureImage: React.FC = () => {
+  const WIDTH = 256;
+  const HEIGHT = 256;
   const FACING_MODE_USER = "user";
   const FACING_MODE_ENVIRONMENT = "environment";
   const classes = useStyles();
@@ -56,14 +58,28 @@ export const CaptureImage: React.FC = () => {
   const webcamRef = useRef<any>(null);
   const hiddenFileInput = React.useRef<HTMLInputElement>(null);
   const [imgSrc, setImgSrc] = useState<any>(null);
-  const [uploadFile, setUploadFile] = useState<File | null>();
   const videoConstraints = {
     facingMode: facingMode,
   };
 
+  const resizeFile = (file: File) => {
+    Resizer.imageFileResizer(
+      file,
+      WIDTH,
+      HEIGHT,
+      "JPEG",
+      100,
+      0,
+      (uri) => {
+        setImgSrc(uri);
+      },
+      "base64"
+    );
+  };
+
   const capture = React.useCallback(() => {
     if (webcamRef.current) {
-      const imageSrc = webcamRef.current.getScreenshot();
+      const imageSrc = webcamRef.current.getScreenshot(WIDTH, HEIGHT);
       setImgSrc(imageSrc);
     }
   }, [webcamRef, setImgSrc]);
@@ -145,15 +161,7 @@ export const CaptureImage: React.FC = () => {
           onChange={(event: any) => {
             const file = event.target.files[0];
             if (file && file.type.substr(0, 5) === "image") {
-              setUploadFile(file);
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                setImgSrc(reader.result);
-                console.log(imgSrc);
-              };
-              reader.readAsDataURL(file);
-            } else {
-              setUploadFile(null);
+              resizeFile(file);
             }
           }}
           style={{ display: "none" }}

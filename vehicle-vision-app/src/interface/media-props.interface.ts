@@ -4,5 +4,4 @@ export interface screenshot {
 
 export interface MediaProps {
   latestImage: any;
-  imageShots: screenshot[];
 }

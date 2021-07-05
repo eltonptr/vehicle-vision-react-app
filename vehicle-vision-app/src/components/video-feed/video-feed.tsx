@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export function MediaControlCard(mediaProps: MediaProps) {
+export const MediaControlCard: React.FC<MediaProps> = ({ latestImage }) => {
   const classes = useStyles();
   const theme = useTheme();
 
@@ -78,9 +78,9 @@ export function MediaControlCard(mediaProps: MediaProps) {
       </div>
       <CardMedia
         className={classes.cover}
-        image="/static/images/cards/live-from-space.jpg"
+        image={latestImage}
         title="Live from space album cover"
       />
     </Card>
   );
-}
+};

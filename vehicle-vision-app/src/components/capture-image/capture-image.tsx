@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Webcam from "react-webcam";
 import "./capture-image.css";
 import Button from "@material-ui/core/Button";
@@ -6,93 +6,160 @@ import VideocamIcon from "@material-ui/icons/Videocam";
 import VideocamOffIcon from "@material-ui/icons/VideocamOff";
 import { MediaControlCard } from "../video-feed/video-feed";
 import { useRef } from "react";
+import {
+  Theme,
+  createStyles,
+  makeStyles,
+  useTheme,
+} from "@material-ui/core/styles";
+import Card from "@material-ui/core/Card";
+import { EventRounded } from "@material-ui/icons";
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+    },
+    button: {
+      width: "100%",
+    },
+    buttonEnds: {
+      width: "33.3%",
+    },
+    buttonMid: {
+      width: "33.3%",
+    },
+    content: {
+      flex: "1 0 auto",
+    },
+    cover: {
+      width: "640px",
+    },
+    controls: {},
+    playIcon: {
+      height: 38,
+      width: 38,
+    },
+  })
+);
 
 export const CaptureImage: React.FC = () => {
   const FACING_MODE_USER = "user";
   const FACING_MODE_ENVIRONMENT = "environment";
+  const classes = useStyles();
+  const theme = useTheme();
 
   const [displayVideoFeed, setDisplayVideoFeed] = useState<boolean>(false);
   const [facingMode, setFacingMode] = React.useState(FACING_MODE_USER);
   const webcamRef = useRef<any>(null);
-  const [imgSrc, setImgSrc] = useState();
+  const hiddenFileInput = React.useRef<HTMLInputElement>(null);
+  const [imgSrc, setImgSrc] = useState<any>(null);
+  const [uploadFile, setUploadFile] = useState<File | null>();
   const videoConstraints = {
     facingMode: facingMode,
   };
+
   const capture = React.useCallback(() => {
-    const imageSrc = webcamRef.current.getScreenshot();
-    setImgSrc(imageSrc);
+    if (webcamRef.current) {
+      const imageSrc = webcamRef.current.getScreenshot();
+      setImgSrc(imageSrc);
+    }
   }, [webcamRef, setImgSrc]);
   return (
-    <div>
-      Capture Image or Upload File Component
-      <Button
-        variant="outlined"
-        color="secondary"
-        size="medium"
-        onClick={() => {
-          displayVideoFeed
-            ? setDisplayVideoFeed(false)
-            : setDisplayVideoFeed(true);
-        }}
-        endIcon={displayVideoFeed ? <VideocamIcon /> : <VideocamOffIcon />}
-      >
-        {!displayVideoFeed ? (
-          <div>Enable Video Feed</div>
+    <div className={classes.root}>
+      <Card className={classes.cover}>
+        <div className={classes.button}>
+          <Button
+            className={classes.buttonEnds}
+            variant="outlined"
+            color="secondary"
+            size="medium"
+            onClick={() => {
+              displayVideoFeed
+                ? setDisplayVideoFeed(false)
+                : setDisplayVideoFeed(true);
+            }}
+            endIcon={displayVideoFeed ? <VideocamIcon /> : <VideocamOffIcon />}
+          >
+            {!displayVideoFeed ? (
+              <div>Enable Camera</div>
+            ) : (
+              <div>Disable Camera</div>
+            )}
+          </Button>
+          <Button
+            className={classes.buttonMid}
+            variant="outlined"
+            color="secondary"
+            size="medium"
+            onClick={() => {
+              setFacingMode((prevState) =>
+                prevState === FACING_MODE_USER
+                  ? FACING_MODE_ENVIRONMENT
+                  : FACING_MODE_USER
+              );
+            }}
+            endIcon={displayVideoFeed ? <VideocamIcon /> : <VideocamOffIcon />}
+          >
+            Switch Camera
+          </Button>
+          <Button
+            className={classes.buttonEnds}
+            variant="outlined"
+            color="secondary"
+            size="medium"
+            onClick={capture}
+            hidden={!displayVideoFeed}
+            endIcon={displayVideoFeed ? <VideocamIcon /> : <VideocamOffIcon />}
+          >
+            Capture photo
+          </Button>
+        </div>
+        {displayVideoFeed ? (
+          <Webcam
+            audio={false}
+            videoConstraints={videoConstraints}
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+            screenshotQuality={0.95}
+            className={classes.controls}
+          />
         ) : (
-          <div>Disable Video Feed</div>
+          <div></div>
         )}
-      </Button>
-      <Button
-        variant="outlined"
-        color="secondary"
-        size="medium"
-        onClick={() => {
-          setFacingMode((prevState) =>
-            prevState === FACING_MODE_USER
-              ? FACING_MODE_ENVIRONMENT
-              : FACING_MODE_USER
-          );
-        }}
-        endIcon={displayVideoFeed ? <VideocamIcon /> : <VideocamOffIcon />}
-      >
-        Switch Camera
-      </Button>
-      {displayVideoFeed ? (
-        <Webcam
-          audio={false}
-          videoConstraints={videoConstraints}
-          ref={webcamRef}
-          screenshotFormat="image/jpeg"
-          screenshotQuality={0.95}
-          style={{
-            position: "absolute",
-            marginLeft: "auto",
-            marginRight: "auto",
-            left: 0,
-            right: 0,
-            textAlign: "center",
-            zIndex: 9,
-            width: 255,
-            height: 255,
+        {
+          <img
+            src={imgSrc ? imgSrc : ""}
+            onClick={(event) => {
+              event.preventDefault();
+              hiddenFileInput.current?.click();
+            }}
+          />
+        }
+        <input
+          type="file"
+          ref={hiddenFileInput}
+          accept="image/*"
+          onChange={(event: any) => {
+            const file = event.target.files[0];
+            if (file && file.type.substr(0, 5) === "image") {
+              setUploadFile(file);
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                setImgSrc(reader.result);
+                console.log(imgSrc);
+              };
+              reader.readAsDataURL(file);
+            } else {
+              setUploadFile(null);
+            }
           }}
+          style={{ display: "none" }}
         />
-      ) : (
-        <div> No Feed </div>
-      )}
-      <Button
-        variant="outlined"
-        color="secondary"
-        size="medium"
-        onClick={capture}
-        endIcon={displayVideoFeed ? <VideocamIcon /> : <VideocamOffIcon />}
-      >
-        Capture photo
-      </Button>
-      {<img src={imgSrc ? imgSrc : ""} />}
-      {MediaControlCard({
-        latestImage: "Hello",
-        imageShots: [{ image: "Hello" }],
-      })}
+        <MediaControlCard latestImage={imgSrc} />
+      </Card>
     </div>
   );
 };

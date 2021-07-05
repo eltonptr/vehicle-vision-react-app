@@ -81,8 +81,10 @@ export const CaptureImage: React.FC = () => {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot(WIDTH, HEIGHT);
       setImgSrc(imageSrc);
+    } else {
+      hiddenFileInput.current?.click();
     }
-  }, [webcamRef, setImgSrc]);
+  }, [webcamRef, setImgSrc, hiddenFileInput]);
   return (
     <div className={classes.root}>
       <Card className={classes.cover}>

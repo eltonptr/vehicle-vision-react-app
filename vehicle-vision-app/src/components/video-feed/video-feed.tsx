@@ -139,21 +139,21 @@ export const MediaControlCard: React.FC<MediaProps> = ({ latestImage }) => {
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>probability</TableCell>
-            <TableCell align="right">tagId</TableCell>
-            <TableCell align="right">tagName</TableCell>
+            <TableCell>TagName</TableCell>
+            <TableCell align="right">Probability</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {predictedData.map((row) => (
-            <TableRow key={row.tagId}>
-              <TableCell component="th" scope="row">
-                {row.tagId}
-              </TableCell>
-              <TableCell align="right">{row.tagName}</TableCell>
-              <TableCell align="right">{row.probability}</TableCell>
-            </TableRow>
-          ))}
+          {predictedData
+            .sort((a, b) => 0 - (a > b ? 1 : -1))
+            .map((row) => (
+              <TableRow key={row.tagId}>
+                <TableCell component="th" scope="row">
+                  {row.tagName}
+                </TableCell>
+                <TableCell align="right">{row.probability}</TableCell>
+              </TableRow>
+            ))}
         </TableBody>
       </Table>
     </TableContainer>

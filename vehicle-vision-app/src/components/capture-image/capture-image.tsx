@@ -25,11 +25,11 @@ const useStyles = makeStyles((theme: Theme) =>
     button: {
       width: "100%",
     },
-    buttonEnds: {
-      width: "33.3%",
+    buttonLeft: {
+      width: "50%",
     },
-    buttonMid: {
-      width: "33.3%",
+    buttonRight: {
+      width: "50%",
     },
     content: {
       flex: "1 0 auto",
@@ -41,6 +41,24 @@ const useStyles = makeStyles((theme: Theme) =>
     playIcon: {
       height: 38,
       width: 38,
+    },
+    containerFeed: {
+      position: "relative",
+    },
+    overlayFeed: {},
+    overlayButtonLeft: {
+      bottom: "6px",
+      left: "9px",
+      position: "absolute",
+      color: "white",
+      borderColor: "white",
+    },
+    overlayButtonRight: {
+      bottom: "6px",
+      right: "9px",
+      position: "absolute",
+      color: "white",
+      borderColor: "white",
     },
   })
 );
@@ -81,6 +99,7 @@ export const CaptureImage: React.FC = () => {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot(WIDTH, HEIGHT);
       setImgSrc(imageSrc);
+      setDisplayVideoFeed(false);
     } else {
       hiddenFileInput.current?.click();
     }
@@ -90,7 +109,7 @@ export const CaptureImage: React.FC = () => {
       <Card className={classes.cover}>
         <div className={classes.button}>
           <Button
-            className={classes.buttonEnds}
+            className={classes.buttonLeft}
             variant="outlined"
             color="secondary"
             size="medium"
@@ -98,6 +117,7 @@ export const CaptureImage: React.FC = () => {
               displayVideoFeed
                 ? setDisplayVideoFeed(false)
                 : setDisplayVideoFeed(true);
+              setImgSrc(null);
             }}
             endIcon={displayVideoFeed ? <VideocamIcon /> : <VideocamOffIcon />}
           >
@@ -108,42 +128,62 @@ export const CaptureImage: React.FC = () => {
             )}
           </Button>
           <Button
-            className={classes.buttonMid}
+            className={classes.buttonRight}
             variant="outlined"
             color="secondary"
             size="medium"
-            onClick={() => {
-              setFacingMode((prevState) =>
-                prevState === FACING_MODE_USER
-                  ? FACING_MODE_ENVIRONMENT
-                  : FACING_MODE_USER
-              );
+            onClick={(event) => {
+              event.preventDefault();
+              hiddenFileInput.current?.click();
+              setDisplayVideoFeed(false);
             }}
             endIcon={displayVideoFeed ? <VideocamIcon /> : <VideocamOffIcon />}
           >
-            Switch Camera
-          </Button>
-          <Button
-            className={classes.buttonEnds}
-            variant="outlined"
-            color="secondary"
-            size="medium"
-            onClick={capture}
-            hidden={!displayVideoFeed}
-            endIcon={displayVideoFeed ? <VideocamIcon /> : <VideocamOffIcon />}
-          >
-            Capture photo
+            Upload a Picture
           </Button>
         </div>
         {displayVideoFeed ? (
-          <Webcam
-            audio={false}
-            videoConstraints={videoConstraints}
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            screenshotQuality={0.95}
-            className={classes.controls}
-          />
+          <div className={classes.containerFeed}>
+            <Webcam
+              audio={false}
+              videoConstraints={videoConstraints}
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              screenshotQuality={0.95}
+              className={classes.overlayFeed}
+            />
+            <Button
+              className={classes.overlayButtonLeft}
+              variant="outlined"
+              color="secondary"
+              size="medium"
+              onClick={() => {
+                setFacingMode((prevState) =>
+                  prevState === FACING_MODE_USER
+                    ? FACING_MODE_ENVIRONMENT
+                    : FACING_MODE_USER
+                );
+              }}
+              endIcon={
+                displayVideoFeed ? <VideocamIcon /> : <VideocamOffIcon />
+              }
+            >
+              Switch Camera
+            </Button>
+            <Button
+              className={classes.overlayButtonRight}
+              variant="outlined"
+              color="secondary"
+              size="medium"
+              onClick={capture}
+              hidden={!displayVideoFeed}
+              endIcon={
+                displayVideoFeed ? <VideocamIcon /> : <VideocamOffIcon />
+              }
+            >
+              Capture photo
+            </Button>
+          </div>
         ) : (
           <div></div>
         )}

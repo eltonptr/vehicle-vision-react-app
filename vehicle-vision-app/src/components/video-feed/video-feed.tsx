@@ -102,29 +102,41 @@ const response = {
   ],
 };
 
+const getBinaryFromFile = (file: string) => {
+  var BASE64_MARKER = ";base64,";
+  var base64Index = file.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
+  var base64 = file.substring(base64Index);
+  var raw = window.atob(base64);
+  var rawLength = raw.length;
+  var array = new Uint8Array(new ArrayBuffer(rawLength));
+  for (let i = 0; i < rawLength; i++) {
+    array[i] = raw.charCodeAt(i);
+  }
+  return array;
+};
 export const MediaControlCard: React.FC<MediaProps> = ({ latestImage }) => {
   const classes = useStyles();
   const [predictedData, setPredictedData] = useState<AzureResponse[]>(
     response.predictions
   );
 
-  const fd = new FormData();
   if (latestImage !== null) {
-    fd.append("image", latestImage);
+    const bin = getBinaryFromFile(latestImage);
+
     axios({
-      method: "post",
-      url: "https://car-custom-vision-poc.cognitiveservices.azure.com/customvision/v3.0/Prediction/05f6b2e5-dd5d-4703-a50a-1044b3d7f47a/classify/iterations/Iteration1/image",
-      data: fd,
+      method: "POST",
+      url: "https://vehiclesvisionapi-prediction.cognitiveservices.azure.com/customvision/v3.0/Prediction/969c11ec-fb9a-4e9e-a239-8ab5721f7232/classify/iterations/Iteration1/image",
+      data: bin,
       headers: {
-        "Content-Type": "multipart/form-data", // The essential
-        "Prediction-Key": "3325e104a82d4f23a8d091bada98552e",
+        "Content-Type": "application/octet-stream", // The essential
+        "Prediction-Key": "b03a66429e02441e8be1cd21c3975190",
       },
     })
       .then((res: any) => {
         console.log(res);
-        if (res.statusCode === "200") {
+        if (res.status === 200) {
           console.log(res);
-          setPredictedData(res.predictedData);
+          setPredictedData(res.data.predictions);
         } else {
           console.log(res);
         }

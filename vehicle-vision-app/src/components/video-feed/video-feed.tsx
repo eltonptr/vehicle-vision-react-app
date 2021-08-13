@@ -129,7 +129,7 @@ export const MediaControlCard: React.FC<MediaProps> = ({ latestImage }) => {
       data: bin,
       headers: {
         "Content-Type": "application/octet-stream", // The essential
-        "Prediction-Key": "b03a66429e02441e8be1cd21c3975190",
+        "Prediction-Key": "123456789ABCDEF",
       },
     })
       .then((res: any) => {
